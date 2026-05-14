@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Public Health Survey Sample Size Calculator</title>
+  <style>
+    body { font-family: Arial; margin: 40px; background: #f5f7fa; }
+    .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; }
+    input { width: 100%; padding: 8px; margin: 8px 0; }
+    button { padding: 10px; background: #2c7be5; color: white; border: none; width: 100%; }
+    .result { margin-top: 20px; background: #eef3f8; padding: 15px; border-radius: 6px; }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Public Health Survey Sample Size Calculator</h2>
+  <p>Designed by a physician–epidemiologist for real-world field surveys.</p>
+  <p>Estimate sample size for cross-sectional public health surveys (SRHR, MNCH, community-based studies)</p>
+
+  <label>Expected Prevalence (%)</label>
+  <input id="p" value="50">
+
+  <label>Margin of Error (%)</label>
+  <input id="d" value="5">
+
+  <label>Confidence Level (%)</label>
+  <input id="conf" value="95">
+
+  <label>Design Effect</label>
+  <input id="deff" value="1.5">
+
+  <label>Non-response Rate (%)</label>
+  <input id="nr" value="10">
+
+  <label>Eligibility Rate (%)</label>
+  <input id="elig" value="40">
+
+  <button onclick="calculate()">Calculate Sample Size</button>
+
+  <div class="result" id="output"></div>
+
+  <hr>
+
+  <p><strong>Need help with survey design or sampling strategy?</strong><br>
+  Services include survey design, sampling planning, data analysis, and dashboards.<br>
+  For project or consulting inquiries, please mention in your message.<br>
+  Contact: abdulwajid.healthdata@gmail.com
+</p>
+
+</div>
+
+<script>
+function getZ(conf) {
+  if (conf == 90) return 1.645;
+  if (conf == 95) return 1.96;
+  if (conf == 99) return 2.576;
+  return 1.96;
+}
+
+function calculate() {
+  let p = document.getElementById("p").value / 100;
+  let d = document.getElementById("d").value / 100;
+  let conf = document.getElementById("conf").value;
+  let deff = document.getElementById("deff").value;
+  let nr = document.getElementById("nr").value / 100;
+  let elig = document.getElementById("elig").value / 100;
+
+  let Z = getZ(conf);
+
+  let base = (Z*Z * p * (1-p)) / (d*d);
+  let adjusted = base * deff;
+  let finalSample = adjusted / (1 - nr);
+  let screening = finalSample / elig;
+
+  document.getElementById("output").innerHTML =
+    "<b>Base Sample Size (SRS):</b> " + Math.round(base) + "<br><br>" +
+    "<b>Final Required Sample Size (after design effect & non-response):</b> " + Math.round(finalSample) + "<br><br>" +
+    "<b>Estimated Individuals/Households to Screen:</b> " + Math.round(screening) + "<br><br>" +
+    "<i>Final sample size represents completed interviews. Screening estimate accounts for eligibility.</i>";
+}
+</script>
+
+</body>
+</html>

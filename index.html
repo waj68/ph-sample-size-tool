@@ -4,10 +4,16 @@
   <title>Public Health Survey Sample Size Calculator</title>
   <style>
     body { font-family: Arial; margin: 40px; background: #f5f7fa; }
-    .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; }
-    input { width: 100%; padding: 8px; margin: 8px 0; }
-    button { padding: 10px; background: #2c7be5; color: white; border: none; width: 100%; }
+    .container { max-width: 650px; background: white; padding: 20px; border-radius: 8px; }
+    input { width: 100%; padding: 8px; margin: 8px 0; box-sizing: border-box; }
+    button { padding: 10px; background: #2c7be5; color: white; border: none; width: 100%; cursor: pointer; }
+    button:hover { background: #1f6ed4; }
     .result { margin-top: 20px; background: #eef3f8; padding: 15px; border-radius: 6px; }
+    .summary { margin-top: 15px; background: #f7f9fb; padding: 15px; border-radius: 6px; border-left: 4px solid #2c7be5; }
+    .protocol { margin-top: 15px; background: #fff8e6; padding: 15px; border-radius: 6px; border-left: 4px solid #f0ad4e; }
+    .copybtn { margin-top: 10px; background: #28a745; }
+    .copybtn:hover { background: #218838; }
+    .small { font-size: 0.9em; color: #555; }
   </style>
 </head>
 
@@ -38,7 +44,18 @@
 
   <button onclick="calculate()">Calculate Sample Size</button>
 
-  <div class="result" id="output"></div>
+  <div class="result" id="output">
+    Results will appear here after calculation.
+  </div>
+
+  <div class="summary" id="summary" style="display:none;"></div>
+
+  <div class="protocol" id="protocolBox" style="display:none;">
+    <h3>Protocol-ready text</h3>
+    <p id="protocolText"></p>
+    <button class="copybtn" onclick="copyProtocolText()">Copy Protocol Text</button>
+    <p class="small" id="copyStatus"></p>
+  </div>
 
   <hr>
 
@@ -59,25 +76,89 @@ function getZ(conf) {
 }
 
 function calculate() {
-  let p = document.getElementById("p").value / 100;
-  let d = document.getElementById("d").value / 100;
-  let conf = document.getElementById("conf").value;
-  let deff = document.getElementById("deff").value;
-  let nr = document.getElementById("nr").value / 100;
-  let elig = document.getElementById("elig").value / 100;
+  let pPercent = Number(document.getElementById("p").value);
+  let dPercent = Number(document.getElementById("d").value);
+  let conf = Number(document.getElementById("conf").value);
+  let deff = Number(document.getElementById("deff").value);
+  let nrPercent = Number(document.getElementById("nr").value);
+  let eligPercent = Number(document.getElementById("elig").value);
+
+  let output = document.getElementById("output");
+  let summary = document.getElementById("summary");
+  let protocolBox = document.getElementById("protocolBox");
+  let protocolText = document.getElementById("protocolText");
+  let copyStatus = document.getElementById("copyStatus");
+
+  copyStatus.innerHTML = "";
+
+  if (
+    isNaN(pPercent) || isNaN(dPercent) || isNaN(conf) || isNaN(deff) ||
+    isNaN(nrPercent) || isNaN(eligPercent) ||
+    pPercent <= 0 || pPercent >= 100 ||
+    dPercent <= 0 ||
+    deff <= 0 ||
+    nrPercent < 0 || nrPercent >= 100 ||
+    eligPercent <= 0 || eligPercent > 100
+  ) {
+    output.innerHTML = "<b>Please check your inputs.</b><br>Prevalence and eligibility should be between 0 and 100%, margin of error should be > 0, design effect should be > 0, and non-response should be between 0 and <100%.";
+    summary.style.display = "none";
+    protocolBox.style.display = "none";
+    return;
+  }
+
+  let p = pPercent / 100;
+  let d = dPercent / 100;
+  let nr = nrPercent / 100;
+  let elig = eligPercent / 100;
 
   let Z = getZ(conf);
 
-  let base = (Z*Z * p * (1-p)) / (d*d);
+  let base = (Z * Z * p * (1 - p)) / (d * d);
   let adjusted = base * deff;
   let finalSample = adjusted / (1 - nr);
   let screening = finalSample / elig;
 
-  document.getElementById("output").innerHTML =
-    "<b>Base Sample Size (SRS):</b> " + Math.round(base) + "<br><br>" +
-    "<b>Final Required Sample Size (after design effect & non-response):</b> " + Math.round(finalSample) + "<br><br>" +
-    "<b>Estimated Individuals/Households to Screen:</b> " + Math.round(screening) + "<br><br>" +
+  let baseRounded = Math.round(base);
+  let adjustedRounded = Math.round(adjusted);
+  let finalRounded = Math.round(finalSample);
+  let screeningRounded = Math.round(screening);
+
+  output.innerHTML =
+    "<b>Base Sample Size (SRS):</b> " + baseRounded + "<br><br>" +
+    "<b>After Design Effect:</b> " + adjustedRounded + "<br><br>" +
+    "<b>Final Required Sample Size (after design effect & non-response):</b> " + finalRounded + "<br><br>" +
+    "<b>Estimated Individuals/Households to Screen:</b> " + screeningRounded + "<br><br>" +
     "<i>Final sample size represents completed interviews. Screening estimate accounts for eligibility.</i>";
+
+  summary.style.display = "block";
+  summary.innerHTML =
+    "<h3>Assumption Summary</h3>" +
+    "<b>Expected prevalence:</b> " + pPercent + "%<br>" +
+    "<b>Margin of error:</b> " + dPercent + "%<br>" +
+    "<b>Confidence level:</b> " + conf + "%<br>" +
+    "<b>Design effect:</b> " + deff + "<br>" +
+    "<b>Non-response rate:</b> " + nrPercent + "%<br>" +
+    "<b>Eligibility rate:</b> " + eligPercent + "%";
+
+  protocolBox.style.display = "block";
+  protocolText.innerHTML =
+    "Sample size was estimated for a cross-sectional public health survey assuming an expected prevalence of " +
+    pPercent + "%, a margin of error of " + dPercent + "%, and a " + conf +
+    "% confidence level. The initial sample size was calculated using the standard formula for a single proportion and was adjusted using a design effect of " +
+    deff + " to account for complex or clustered sampling. A non-response rate of " +
+    nrPercent + "% was then applied, resulting in a final required sample size of approximately " +
+    finalRounded + " completed interviews. Based on an estimated eligibility rate of " +
+    eligPercent + "%, approximately " + screeningRounded +
+    " individuals or households would need to be screened to achieve the target sample.";
+}
+
+function copyProtocolText() {
+  let text = document.getElementById("protocolText").innerText;
+  navigator.clipboard.writeText(text).then(function() {
+    document.getElementById("copyStatus").innerHTML = "Protocol text copied.";
+  }, function() {
+    document.getElementById("copyStatus").innerHTML = "Copy failed. Please select and copy the text manually.";
+  });
 }
 </script>
 
