@@ -81,5 +81,80 @@ function calculate() {
 }
 </script>
 
-</body>
+<style>
+  .ph-tools-footer {
+    margin-top: 3rem;
+    border-top: 1px solid #d4cfc6;
+    padding: 2rem 1.5rem;
+    font-family: system-ui, sans-serif;
+    background: #f7f4ef;
+  }
+  .ph-footer-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .ph-footer-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .ph-back-link {
+    font-size: 0.85rem;
+    color: #2d6a4f;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+  }
+  .ph-back-link:hover { text-decoration: underline; }
+  .ph-other-tool { font-size: 0.82rem; color: #5a5a5a; }
+  .ph-other-tool a { color: #2d6a4f; text-decoration: none; font-weight: 500; }
+  .ph-other-tool a:hover { text-decoration: underline; }
+  .ph-consult-box {
+    background: #fff;
+    border: 1px solid #d4cfc6;
+    border-left: 3px solid #2d6a4f;
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+  }
+  .ph-consult-box p {
+    font-size: 0.88rem;
+    color: #3a3a3a;
+    margin: 0 0 0.5rem;
+    line-height: 1.6;
+  }
+  .ph-consult-box strong { color: #1a1a1a; }
+  .ph-consult-box a.ph-email {
+    font-size: 0.88rem;
+    color: #2d6a4f;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .ph-consult-box a.ph-email:hover { text-decoration: underline; }
+  .ph-consult-services { font-size: 0.78rem; color: #888; margin-top: 0.4rem; }
+  .ph-footer-credit { font-size: 0.75rem; color: #aaa; text-align: center; }
+</style>
+
+<div class="ph-tools-footer">
+  <div class="ph-footer-inner">
+    <div class="ph-footer-nav">
+      <a href="https://waj68.github.io" class="ph-back-link">← All public health tools</a>
+<span class="ph-other-tool">Also try: <a href="https://waj68.github.io/journal-figure-optimizer/" target="_blank">Journal Figure Optimizer</a></span>
+    </div>
+    <div class="ph-consult-box">
+      <p><strong>Planning a study and need expert input?</strong><br>
+      I offer consulting for researchers at all career stages — from study design and sample size planning through to analysis and manuscript preparation.</p>
+      <p class="ph-consult-services">Survey design · Sampling strategy · Statistical analysis (R, SPSS, Python) · Scientific writing · Research proposals · Dashboards</p>
+      <a href="mailto:abdulwajid.healthdata@gmail.com?subject=Consulting inquiry — sample size / study design" class="ph-email">abdulwajid.healthdata@gmail.com</a>
+    </div>
+    <p class="ph-footer-credit">Built by Abdul Wajid — Physician-Epidemiologist, Calgary Canada · <a href="https://planetarypulsehealth.substack.com" target="_blank" style="color:#aaa;">Planetary Pulse Health</a></p>
+  </div>
+</div>
+      </body>
 </html>
